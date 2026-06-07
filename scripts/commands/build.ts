@@ -1,5 +1,6 @@
 import {
   cpSync,
+  copyFileSync,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -7,9 +8,17 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { ensureConfig, config } from "../core/config.ts";
-import { ensureDirs, root, output, source, createFile } from "../core/paths.ts";
+import {
+  ensureDirs,
+  root,
+  output,
+  source,
+  createFile,
+  entryFile,
+  outEntry,
+} from "../core/paths.ts";
 import { updateRoutes } from "../core/routes.ts";
 import { handleCopy } from "../core/pipeline.ts";
 import { handleTailwind } from "../core/styles.ts";
@@ -47,7 +56,7 @@ async function optimize() {
   try {
     const esbuild = await import("esbuild");
     await esbuild.build({
-      entryPoints: [join(output, "pages", "main.js")],
+      entryPoints: [outEntry],
       bundle: true,
       minify: true,
       format: "esm",
@@ -57,7 +66,7 @@ async function optimize() {
     });
     finalizeIndex((html) =>
       html
-        .replace("/pages/main.js", "/app.js")
+        .replace("/.ura/main.js", "/app.js")
         .replace(/[ \t]*<script type="importmap">[\s\S]*?<\/script>\s*/, ""),
     );
     pruneBundledJs();
@@ -82,6 +91,9 @@ async function optimize() {
   }
   updateRoutes();
   await handleCopy(source);
+  mkdirSync(dirname(outEntry), { recursive: true });
+  copyFileSync(entryFile, outEntry);
+  rmSync(join(output, "ura", "devtools"), { recursive: true, force: true });
   await handleTailwind();
   finalizeIndex((html) =>
     html.replace(/window\.mode\s*=\s*["'][^"']*["']/, 'window.mode = "prod"'),

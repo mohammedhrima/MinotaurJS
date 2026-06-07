@@ -6,9 +6,16 @@ function {{Name}}(props{{propsType}}){{vdomType}} {
   return (
     <div className="{{className}}">
       <h1>{{title}}</h1>
-      <button onclick={() => setCount(count() + 1)}>Clicked {count()} times</button>
+      <p>A fresh UraJS page. Edit src/pages/{{name}}/page to make it yours.</p>
+      <button onclick={() => setCount(count() + 1)}>
+        Clicked {count()} times
+      </button>
     </div>
   );
 }
 
-export default {{Name}}
+export default {
+  page: {{Name}},
+  route: "{{route}}",
+  title: "{{title}}",
+};

@@ -1,7 +1,7 @@
 import { existsSync, readdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { config } from "./config.ts";
-import { source, pagesDir } from "./paths.ts";
+import { source, pagesDir, entryFile } from "./paths.ts";
 import { routeId } from "./names.ts";
 import { render } from "./template.ts";
 import { ura } from "./logger.ts";
@@ -28,10 +28,19 @@ function scanRoutes(
       let id = routeId(rel.map((s) => s.replace(/^\[(.+)\]$/, ":$1")));
       while (used.has(id)) id += "_";
       used.add(id);
-      routes[routePath] = { importPath: "./" + rel.join("/") + "/page.js", id };
+      routes[routePath] = {
+        importPath: "../pages/" + rel.join("/") + "/page.js",
+        id,
+      };
     }
     scanRoutes(full, routes, used);
   }
+}
+
+export function listRoutes(): string[] {
+  const routes: Record<string, RouteEntry> = {};
+  scanRoutes(pagesDir, routes, new Set());
+  return Object.keys(routes).sort();
 }
 
 function collectStyles(): string[] {
@@ -96,21 +105,15 @@ export function updateRoutes() {
       .map((e) => `import * as ${e.id} from "${e.importPath}";`)
       .join("\n");
     const routeMap = [
-      ...(defaultId ? [`  "/": ${defaultId}.default,`] : []),
-      ...Object.entries(routes).map(
-        ([path, e]) => `  "${path}": ${e.id}.default,`,
-      ),
+      ...(defaultId ? [`  "/": ${defaultId},`] : []),
+      ...Object.entries(routes).map(([path, e]) => `  "${path}": ${e.id},`),
     ].join("\n");
-    const keepAliveMap = Object.entries(routes)
-      .map(([path, e]) => `  "${path}": ${e.id}.keepAlive,`)
-      .join("\n");
 
     writeFileSync(
-      join(pagesDir, "main.js"),
+      entryFile,
       render("main.tpl", {
         imports,
         routes: routeMap,
-        keepAlive: keepAliveMap,
         styles: JSON.stringify(styles, null, 2),
       }),
       "utf8",

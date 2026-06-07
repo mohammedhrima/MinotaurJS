@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node ./scripts/commands/dev.ts",
+    "dev": "node ./scripts/commands/dev.ts",
     "route": "node ./scripts/commands/route.ts",
     "comp": "node ./scripts/commands/comp.ts",
     "clear": "rm -rf ./out/*",

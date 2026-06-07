@@ -7,7 +7,7 @@ export const pascal = (s: string): string =>
 const segments = (raw: string): string[] =>
   raw
     .split("/")
-    .map((s) => s.trim().replace(/^\[(.+)\]$/, "$1"))
+    .map((s) => s.trim().replace(/^\[(.+)\]$/, "$1").replace(/^:(.+)$/, "$1"))
     .filter(Boolean);
 
 export function deriveNames(raw: string) {
@@ -19,10 +19,14 @@ export function deriveNames(raw: string) {
   };
 }
 
-export const routeId = (segs: string[]): string =>
-  segs
+export const routeId = (segs: string[]): string => {
+  const id = segs
     .map((s) => s.replace(/^:(.+)$/, "$1"))
     .flatMap((s) => s.split(/[-_]/))
     .filter(Boolean)
     .map(capitalize)
-    .join("") || "Index";
+    .join("");
+  if (!id) return "Index";
+  // Import names can't start with a digit (e.g. a "404" route -> "R404").
+  return /^[0-9]/.test(id) ? "R" + id : id;
+};

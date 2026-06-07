@@ -6,10 +6,6 @@ Ura.setRoutes({
 {{routes}}
 });
 
-Ura.setKeepAlive({
-{{keepAlive}}
-});
-
 Ura.setStyles({{styles}});
 
 Ura.start();

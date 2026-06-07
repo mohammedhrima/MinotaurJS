@@ -4,3 +4,6 @@ out/
 **/package-lock.json
 **/.DS_Store
 **/docker
+
+# UraJS generated entry (config.json is tracked)
+.ura/main.js

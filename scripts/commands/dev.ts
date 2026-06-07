@@ -1,14 +1,14 @@
 import { existsSync, readdirSync, rmSync, statSync } from "node:fs";
 import { extname, join } from "node:path";
-import { ensureConfig, config } from "../core/config.ts";
+import { loadConfig, isConfigComplete, config } from "../core/config.ts";
 import { ensureDirs, source, output, outKeyForSource } from "../core/paths.ts";
 import { handleCopy, handleDelete } from "../core/pipeline.ts";
 import { handleTailwind } from "../core/styles.ts";
 import { updateRoutes } from "../core/routes.ts";
-import { transpileFile } from "../core/transpile.ts";
 import {
   served,
   seedIndex,
+  syncEntry,
   broadcast,
   createServer,
   closeServer,
@@ -57,10 +57,7 @@ async function flush(batch: string[]) {
 
   if (structural) {
     updateRoutes();
-    const mainSrc = join(source, "pages", "main.js");
-    watcher?.ignoreNext(mainSrc);
-    await transpileFile(mainSrc);
-    served.add(outKeyForSource(mainSrc));
+    syncEntry();
     broadcast({ action: "reload" });
   } else if (reload) {
     broadcast({ action: "reload" });
@@ -81,14 +78,19 @@ process.on("SIGTERM", shutdown);
 
 (async () => {
   ensureDirs();
-  await ensureConfig();
+  loadConfig();
+  if (!isConfigComplete())
+    ura.warn("config incomplete — open the app; the dev tools will set it up");
 
   if (existsSync(output)) {
     for (const sub of readdirSync(output))
       rmSync(join(output, sub), { recursive: true, force: true });
   }
-  updateRoutes();
+  if (config.dirRouting === "enable") {
+    updateRoutes();
+  }
   await handleCopy(source);
+  if (config.dirRouting === "enable") syncEntry();
   await handleTailwind();
   seedIndex();
   tsc = startTypecheck();

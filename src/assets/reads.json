@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "from-scratch",
+    "title": "Building a framework from scratch",
+    "minutes": 4,
+    "excerpt": "What you learn when there is no library to lean on.",
+    "body": "UraJS has no virtual-DOM dependency and no runtime packages. Components are plain functions that return a small virtual tree; the runtime mounts it, diffs it, and patches the DOM. Understanding every line is the whole point — nothing is hidden behind a black box you did not write."
+  },
+  {
+    "slug": "keyed-lists",
+    "title": "Keys, and why lists keep their place",
+    "minutes": 3,
+    "excerpt": "Reconcile by identity, not by position.",
+    "body": "When a list reorders, keys let the reconciler match old nodes to new ones by identity. The DOM nodes and their component state move with the key instead of being rebuilt, so inputs keep focus, scroll is preserved, and animations do not restart. Drop the keys and every reorder becomes a teardown."
+  },
+  {
+    "slug": "keep-alive",
+    "title": "State that survives navigation",
+    "minutes": 5,
+    "excerpt": "Leave a page, come back, find it untouched.",
+    "body": "Opt a page into keep-alive and the runtime caches its instance — state, DOM, and scroll — when you navigate away, then restores it when you return. Dynamic routes cache per full path, so each article remembers itself. It is the difference between an app that feels disposable and one that feels alive."
+  }
+]

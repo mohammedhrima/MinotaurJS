@@ -11,12 +11,16 @@ export const output = join(root, "out");
 export const pagesDir = join(source, "pages");
 export const templatesDir = join(scriptsDir, "templates");
 export const contentDir = join(scriptsDir, "content");
-export const configPath = join(root, "ura.config.json");
+export const uraDir = join(root, ".ura");
+export const configPath = join(uraDir, "config.json");
+export const entryFile = join(uraDir, "main.js");
+export const outEntry = join(output, ".ura", "main.js");
 
 export function ensureDirs() {
   mkdirSync(join(source, "components"), { recursive: true });
   mkdirSync(pagesDir, { recursive: true });
   mkdirSync(join(source, "assets"), { recursive: true });
+  mkdirSync(uraDir, { recursive: true });
 }
 
 export const toOutKey = (absOut: string): string =>

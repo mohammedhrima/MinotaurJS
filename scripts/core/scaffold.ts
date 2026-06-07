@@ -6,11 +6,20 @@ import { deriveNames } from "./names.ts";
 function vars(raw: string) {
   const isTS = config.typescript === "enable";
   const { Name, className, title } = deriveNames(raw);
+  const route =
+    "/" +
+    raw
+      .split("/")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((s) => s.replace(/^\[(.+)\]$/, ":$1"))
+      .join("/");
   return {
     name: raw,
     Name,
     className,
     title,
+    route,
     tsIgnore: isTS ? "//@ts-ignore\n" : "",
     importExtras: isTS ? ", Ura, VDOM, Props" : "",
     propsType: isTS ? ": Props" : "",
@@ -37,11 +46,14 @@ export const generateComponent = (name: string): string => {
 
 export const generateStyle = (
   name: string,
-  kind: "layout" | "component",
+  kind: "layout" | "component" | "page",
 ): string => {
   if (config.styling === "Tailwind CSS") return "";
-  return render(
-    kind === "layout" ? "style-layout.tpl" : "style-component.tpl",
-    vars(name),
-  );
+  const tpl =
+    kind === "layout"
+      ? "style-layout.tpl"
+      : kind === "page"
+        ? "style-page.tpl"
+        : "style-component.tpl";
+  return render(tpl, vars(name));
 };

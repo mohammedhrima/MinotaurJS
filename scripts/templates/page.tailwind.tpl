@@ -13,4 +13,8 @@ function {{Name}}(props{{propsType}}){{vdomType}} {
   );
 }
 
-export default {{Name}}
+export default {
+  page: {{Name}},
+  route: "{{route}}",
+  title: "{{title}}",
+};

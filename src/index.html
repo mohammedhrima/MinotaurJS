@@ -28,6 +28,9 @@
 <script>
   window.mode = "dev"
 </script>
-<script type="module" src="/pages/main.js"></script>
+<script type="module" src="/.ura/main.js"></script>
+<script type="module">
+  if (window.mode === "dev") import("/ura/devtools/orb.js");
+</script>
 
 </html>

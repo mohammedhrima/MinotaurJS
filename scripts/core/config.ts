@@ -27,12 +27,22 @@ export function loadConfig() {
   try {
     Object.assign(config, JSON.parse(readFileSync(configPath, "utf8")));
   } catch {
-    ura.warn("ura.config.json is invalid — ignoring");
+    ura.warn(".ura/config.json is invalid — ignoring");
   }
 }
 
 export function saveConfig() {
   writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n");
+}
+
+export function isConfigComplete(): boolean {
+  return Boolean(
+    config.typescript &&
+      config.dirRouting &&
+      config.styling &&
+      config.port &&
+      (config.dirRouting !== "enable" || config.defaultRoute),
+  );
 }
 
 export async function ensureConfig() {
