@@ -47,7 +47,8 @@ behind any web server. Pages and components can be written in `.tsx`, `.ts`,
 - Reactive `State` hook with fine-grained, per-instance re-renders.
 - Keyed reconciliation that preserves DOM and component state across reorders.
 - Directory-based routing, including dynamic `:param` segments.
-- Template directives: `ura-if` / `ura-elif` / `ura-else`, `ura-loop`, `exec`.
+- Directives (as tags or attributes): `ura-if` / `ura-elif` / `ura-else`, `ura-loop`, `exec`,
+  plus the `<get>` portal tag.
 - Opt-in `keep-alive` so a route keeps its state when you navigate away and back.
 - A small data layer: `useQuery` / `useMutation` and an `api` fetch helper.
 - Live-reloading dev server and a dependency-free static build.
@@ -178,6 +179,10 @@ The JSX pragma is `Ura.e`, so a file that uses JSX needs `Ura` in scope. In
 `.tsx`/`.ts` files import it explicitly (`import Ura from "ura"`); in `.jsx`/`.js`
 files the build injects it automatically.
 
+Element props mirror the DOM: event handlers are `on<event>` (`onclick`, `oninput`, …), `style`
+takes an object (`style={{ color: "red" }}`), and classes use `className`. `onhover` is a
+convenience that wires both `mouseover` and `mouseout`.
+
 ## State
 
 `State(initial)` returns a getter and a setter. Read with the getter, update
@@ -218,6 +223,8 @@ function Menu() {
 - `navigate` is also available directly: `import { navigate } from "ura"`.
 - `In(path)` returns whether a path is the current route (useful for active nav
   links): `import { In } from "ura"`.
+- `onNavigate(cb)` registers a callback that runs on every navigation;
+  `getCurrentRoute()` returns the current path and `getRouteParams()` the matched `:params`.
 
 ## Query params and cookies
 
@@ -238,7 +245,7 @@ Ura.rmCookie("token");
 
 ## Directives
 
-Conditionals — `ura-if`, optional `ura-elif`, optional `ura-else`:
+**Conditionals** — `ura-if`, optional `ura-elif`, optional `ura-else`. As tags:
 
 ```tsx
 <ura-if cond={score() >= 90}>Excellent</ura-if>
@@ -246,8 +253,15 @@ Conditionals — `ura-if`, optional `ura-elif`, optional `ura-else`:
 <ura-else>Needs work</ura-else>
 ```
 
-Lists — `ura-loop` takes an array on `on` and a render function as its child.
-Use a stable `key`:
+…or as **attributes** on any element — the element itself is mounted/unmounted with the condition:
+
+```tsx
+<p ura-if={isRaining()}>Bring an umbrella</p>
+<p ura-else>Skies are clear</p>
+```
+
+**Loops** — `ura-loop` takes an array on `on` and a render function as its child. Use a stable
+`key` so reordering moves DOM and state by identity:
 
 ```tsx
 <ura-loop on={items()}>
@@ -255,23 +269,31 @@ Use a stable `key`:
 </ura-loop>
 ```
 
-Side effects — `exec` runs a function after the surrounding markup is in the DOM:
+**Side effects** — `exec` runs a function after the surrounding markup is in the DOM:
 
 ```tsx
 <exec call={() => (document.title = "UraJS")} />
 ```
 
-Fragments group siblings without a wrapper element:
+**Fragments** group siblings without a wrapper element:
 
 ```tsx
-function Pair() {
-  return (
-    <>
-      <span>one</span>
-      <span>two</span>
-    </>
-  );
-}
+<>
+  <span>one</span>
+  <span>two</span>
+</>
+```
+
+### Special tags
+
+`<get>` is a lightweight portal: it renders its children into an element that **already exists**
+in the document, selected by `by` (a CSS selector) — handy for mounting into the document `body`,
+a node from `index.html`, or anything mounted earlier.
+
+```tsx
+<get by="#sidebar">
+  <nav>…</nav>
+</get>
 ```
 
 ## Keep-alive
