@@ -1,0 +1,7 @@
+{
+  "typescript": "enable",
+  "dirRouting": "enable",
+  "defaultRoute": "home",
+  "styling": "CSS",
+  "port": 17000
+}

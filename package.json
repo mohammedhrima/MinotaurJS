@@ -4,33 +4,28 @@
   "description": "frontend framework",
   "type": "module",
   "scripts": {
-    "start": "npm run clear && node ./scripts/server.js",
-    "route": "node ./scripts/route.js",
-    "comp": "node ./scripts/comp.js",
+    "start": "node ./scripts/commands/dev.ts",
+    "route": "node ./scripts/commands/route.ts",
+    "comp": "node ./scripts/commands/comp.ts",
     "clear": "rm -rf ./out/*",
-    "build": "node ./scripts/build.js",
-    "config": "node ./scripts/config.js",
-    "reset": "node ./scripts/reset-config.js"
-  },
-  "bin": {
-    "urastart": "node ./scripts/server.js",
-    "uraroute": "node ./scripts/route.js",
-    "uracomp": "node ./scripts/comp.js",
-    "uraclear": "rm -rf ./out/*",
-    "urabuild": "node ./scripts/build.js",
-    "uraconfig": "node ./scripts/config.js"
+    "build": "node ./scripts/commands/build.ts",
+    "config": "node ./scripts/commands/config.ts",
+    "reset": "node ./scripts/commands/reset.ts",
+    "typecheck": "tsc --noEmit -p scripts/tsconfig.json"
   },
   "author": "Hrima Mohammed",
   "license": "MIT",
+  "dependencies": {
+    "typescript": "^5.6.3"
+  },
   "devDependencies": {
+    "@types/node": "^22"
+  },
+  "optionalDependencies": {
     "autoprefixer": "^10.4.20",
-    "chokidar": "^4.0.1",
-    "enquirer": "^2.4.1",
-    "express": "^5.1.0",
+    "esbuild": "^0.24.2",
     "postcss": "^8.4.49",
     "sass": "^1.80.6",
-    "tailwindcss": "^3.4.15",
-    "typescript": "^5.6.3",
-    "ws": "^8.18.1"
+    "tailwindcss": "^3.4.15"
   }
 }
