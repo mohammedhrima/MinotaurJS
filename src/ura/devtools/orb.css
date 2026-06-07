@@ -1,0 +1,469 @@
+.ura-root {
+  --o-accent: #007acc;
+  --o-accent-2: #36b6ff;
+  --o-panel: rgba(12, 17, 28, 0.92);
+  --o-solid: #0d1422;
+  --o-surface: rgba(255, 255, 255, 0.04);
+  --o-surface-2: rgba(255, 255, 255, 0.07);
+  --o-border: rgba(120, 160, 220, 0.18);
+  --o-border-strong: rgba(120, 170, 235, 0.42);
+  --o-text: #eaf0fb;
+  --o-muted: #93a1bd;
+  --o-radius: 16px;
+  --o-ease: cubic-bezier(0.22, 0.8, 0.24, 1);
+  --o-shadow: 0 24px 70px -24px rgba(0, 0, 0, 0.78);
+  --o-grad: linear-gradient(135deg, #007acc, #36b6ff 55%, #58e0ff);
+  --o-font:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --o-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+
+  position: fixed;
+  left: 24px;
+  bottom: 24px;
+  z-index: 2147483000;
+  font-family: var(--o-font);
+  color: var(--o-text);
+  font-size: 14px;
+  line-height: 1.45;
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* Collapsed orb — dark glass button with a brand-blue settings gear */
+  .ura-orb {
+    position: relative;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    cursor: grab;
+    color: var(--o-accent-2);
+    background: radial-gradient(120% 120% at 32% 26%, #1b2740, #0c1220 72%);
+    border: 1.5px solid rgba(6, 10, 18, 0.95);
+    box-shadow:
+      0 12px 30px -10px rgba(0, 0, 0, 0.85),
+      inset 0 0 0 1px rgba(120, 160, 220, 0.16),
+      0 0 26px -6px rgba(0, 122, 204, 0.55);
+    display: grid;
+    place-items: center;
+    touch-action: none;
+    transition:
+      transform 0.25s var(--o-ease),
+      box-shadow 0.25s var(--o-ease),
+      border-color 0.25s var(--o-ease);
+
+    svg {
+      width: 26px;
+      height: 26px;
+      display: block;
+      filter: drop-shadow(0 0 6px rgba(54, 182, 255, 0.5));
+      transition: transform 0.5s var(--o-ease);
+    }
+
+    &:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow:
+        0 18px 42px -10px rgba(0, 0, 0, 0.9),
+        inset 0 0 0 1px rgba(120, 170, 235, 0.3),
+        0 0 34px -6px rgba(0, 122, 204, 0.8);
+      svg {
+        transform: rotate(70deg);
+      }
+    }
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  &.dragging .ura-orb {
+    transform: scale(1.06);
+  }
+
+  /* "I'm movable" tooltip, shown only when collapsed + hovered */
+  .ura-tip {
+    position: absolute;
+    left: 0;
+    bottom: 66px;
+    white-space: nowrap;
+    background: var(--o-solid);
+    border: 1px solid var(--o-border);
+    color: var(--o-text);
+    font-size: 0.76rem;
+    font-weight: 500;
+    padding: 7px 11px;
+    border-radius: 9px;
+    box-shadow: var(--o-shadow);
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+    transition:
+      opacity 0.2s var(--o-ease),
+      transform 0.2s var(--o-ease);
+  }
+  &:not(.open) .ura-orb:hover + .ura-tip {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Panel */
+  .ura-panel {
+    display: none;
+    position: absolute;
+    left: 0;
+    bottom: 68px;
+    width: 360px;
+    max-width: min(360px, calc(100vw - 32px));
+    max-height: min(560px, 78vh);
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--o-panel);
+    backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid var(--o-border);
+    border-radius: var(--o-radius);
+    box-shadow: var(--o-shadow);
+    animation: ura-rise 0.26s var(--o-ease) both;
+  }
+  &.open .ura-panel {
+    display: flex;
+  }
+
+  .ura-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 15px;
+    border-bottom: 1px solid var(--o-border);
+
+    .ura-title {
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      b {
+        color: var(--o-accent-2);
+      }
+      .ura-title-tag {
+        margin-left: 8px;
+        font-size: 0.66rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--o-muted);
+        border: 1px solid var(--o-border);
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+    }
+    .ura-close {
+      background: transparent;
+      border: none;
+      color: var(--o-muted);
+      font-size: 1.25rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 8px;
+      transition: all 0.2s var(--o-ease);
+      &:hover {
+        color: var(--o-text);
+        background: var(--o-surface);
+      }
+    }
+  }
+
+  .ura-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 8px 10px 0;
+    border-bottom: 1px solid var(--o-border);
+
+    .ura-tab {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--o-muted);
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 8px 6px 10px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s var(--o-ease);
+      &:hover {
+        color: var(--o-text);
+      }
+      &.active {
+        color: var(--o-text);
+        border-bottom-color: var(--o-accent);
+      }
+      &.disabled {
+        opacity: 0.38;
+        cursor: default;
+        &:hover {
+          color: var(--o-muted);
+        }
+      }
+    }
+  }
+
+  .ura-body {
+    padding: 16px 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .ura-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* Create controls pinned to the panel bottom while the list scrolls above */
+  .ura-sticky {
+    position: sticky;
+    bottom: -16px;
+    margin: 0 -15px;
+    padding: 12px 15px 16px;
+    background: var(--o-solid);
+    border-top: 1px solid var(--o-border);
+    box-shadow: 0 -10px 18px -10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ura-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .ura-flabel {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--o-muted);
+    }
+  }
+
+  .ura-input,
+  .ura-select {
+    width: 100%;
+    background: rgba(8, 13, 23, 0.7);
+    border: 1px solid var(--o-border);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: var(--o-text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition:
+      border-color 0.2s var(--o-ease),
+      box-shadow 0.2s var(--o-ease);
+    &:focus {
+      border-color: var(--o-accent);
+      box-shadow: 0 0 0 3px rgba(0, 122, 204, 0.22);
+    }
+  }
+
+  .ura-seg {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: rgba(8, 13, 23, 0.6);
+    border: 1px solid var(--o-border);
+    border-radius: 10px;
+
+    .ura-seg-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--o-muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 0;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.18s var(--o-ease);
+      &.active {
+        background: var(--o-accent);
+        color: #fff;
+        box-shadow: 0 6px 16px -8px rgba(0, 122, 204, 0.9);
+      }
+    }
+  }
+
+  .ura-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ura-btn {
+    background: var(--o-surface);
+    color: var(--o-text);
+    border: 1px solid var(--o-border);
+    border-radius: 9px;
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      transform 0.16s var(--o-ease),
+      filter 0.2s var(--o-ease),
+      background 0.2s var(--o-ease),
+      border-color 0.2s var(--o-ease);
+    &:hover {
+      border-color: var(--o-border-strong);
+      background: var(--o-surface-2);
+    }
+    &:active {
+      transform: scale(0.97);
+    }
+    &[disabled] {
+      opacity: 0.55;
+      cursor: default;
+    }
+
+    &.primary {
+      background: var(--o-accent);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 10px 26px -12px rgba(0, 122, 204, 0.95);
+      &:hover {
+        filter: brightness(1.08);
+      }
+    }
+    &.ghost {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      color: var(--o-accent-2);
+      background: transparent;
+    }
+    &.danger {
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      color: #ff8499;
+      background: transparent;
+      &:hover {
+        border-color: rgba(244, 63, 94, 0.5);
+        background: rgba(244, 63, 94, 0.12);
+      }
+    }
+  }
+
+  .ura-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .ura-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--o-surface);
+      border: 1px solid var(--o-border);
+      border-radius: 9px;
+      padding: 8px 11px;
+
+      .ura-item-label {
+        font-size: 0.85rem;
+        font-family: var(--o-mono);
+        color: var(--o-text);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .ura-item-actions {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  .ura-new {
+    display: flex;
+    gap: 6px;
+    .ura-input,
+    .ura-select {
+      flex: 1;
+    }
+  }
+
+  .ura-checkrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.82rem;
+    color: var(--o-muted);
+    cursor: pointer;
+    .ura-check {
+      accent-color: var(--o-accent);
+      width: 15px;
+      height: 15px;
+    }
+  }
+
+  .ura-log {
+    margin: 0;
+    background: rgba(4, 8, 15, 0.8);
+    border: 1px solid var(--o-border);
+    border-radius: 10px;
+    padding: 11px 13px;
+    font-family: var(--o-mono);
+    font-size: 0.76rem;
+    line-height: 1.6;
+    color: #c8d6ee;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 230px;
+    overflow-y: auto;
+  }
+
+  .ura-hint {
+    font-size: 0.76rem;
+    color: var(--o-muted);
+    line-height: 1.5;
+  }
+  .ura-empty {
+    font-size: 0.84rem;
+    color: var(--o-muted);
+    padding: 6px 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 9px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(120, 160, 220, 0.25);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+}
+
+@keyframes ura-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ura-root {
+    .ura-panel {
+      animation: none;
+    }
+    * {
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
